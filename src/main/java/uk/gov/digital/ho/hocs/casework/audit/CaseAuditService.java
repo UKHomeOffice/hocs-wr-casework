@@ -40,7 +40,7 @@ class CaseAuditService {
         unitToCaseTypesMapping.put(UnitType.HMPOCOL, new CaseType[]{CaseType.COL});
 
         unitToReportHeadingMapping = new EnumMap<>(UnitType.class);
-        unitToReportHeadingMapping.put(UnitType.RSH, "Case_Type,Case_Reference,Case_UUID,Case_Timestamp,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Timestamp,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email");
+        unitToReportHeadingMapping.put(UnitType.RSH, "Case_Type,Case_Reference,Case_UUID,Case_Timestamp,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Timestamp,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email,Stage_cab-hardship-type-homelessness,Stage_cab-hardship-type-essential-living-costs,Stage_cab-hardship-type-severe-financial-debt,Stage_cab-referral,Stage_cab-consent-form-sent,Stage_cab-consent-received,Stage_cab-date-referred-to-cab,Stage_cab-date-appointment-booked,Stage_cab-appointment-attended,Stage_deceased,Stage_Created_by_user,Stage_Created_timestamp,Stage_Updated_by_user,Stage_Updated_timestamp");
     }
 
     private final AuditService auditService;
@@ -90,6 +90,10 @@ class CaseAuditService {
         stageMap.put(columnNameFormat(stageName, "Type"), stageAuditEntry.getType());
         stageMap.put(columnNameFormat(stageName, "Timestamp"), stageAuditEntry.getTimestamp().toString());
         stageMap.put(columnNameFormat(stageName, "CaseUUID"), stageAuditEntry.getCaseUUID().toString());
+        stageMap.put(columnNameFormat(stageName, "Created_by_user"), stageAuditEntry.getCreatedByUser());
+        stageMap.put(columnNameFormat(stageName, "Created_timestamp"), stageAuditEntry.getCreatedTimestamp() == null ? "":stageAuditEntry.getCreatedTimestamp().toString());
+        stageMap.put(columnNameFormat(stageName, "Updated_by_user"), stageAuditEntry.getUpdatedByUser());
+        stageMap.put(columnNameFormat(stageName, "Updated_timestamp"), stageAuditEntry.getUpdatedTimestamp() == null ? "":stageAuditEntry.getUpdatedTimestamp().toString());
 
         try {
             Map<String, String> dataMap = objectMapper.readValue(stageAuditEntry.getData(), new TypeReference<HashMap<String, String>>() {
@@ -125,7 +129,7 @@ class CaseAuditService {
     }
 
     private static LocalDateTime getStartDate(LocalDate cutoff) {
-        int monthsBack = 4;
+        int monthsBack = 12;
         // Start at the first day of the month
         return LocalDateTime.of(cutoff.minusMonths(monthsBack).getYear(), cutoff.minusMonths(monthsBack).getMonth(), 1, 0, 0);
     }

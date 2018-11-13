@@ -8,12 +8,14 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.model.UserAuditEntry;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -21,12 +23,14 @@ import java.util.UUID;
 public class AuditService {
 
     private final AuditRepository auditRepository;
+    private final UserAuditRepository userAuditRepository;
     private final ObjectMapper objectMapper;
     private final RequestData requestData;
 
     @Autowired
-    public AuditService(AuditRepository auditRepository, RequestData requestData) {
+    public AuditService(AuditRepository auditRepository, UserAuditRepository userAuditRepository, RequestData requestData) {
         this.auditRepository = auditRepository;
+        this.userAuditRepository = userAuditRepository;
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
         this.requestData = requestData;
     }
@@ -58,12 +62,14 @@ public class AuditService {
     }
 
     public void writeCreateStageEvent(StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.CREATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, null, AuditAction.CREATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateStageEvent(StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
+        UserAuditEntry userAuditEntry = userAuditRepository.findByCaseUUID(stageData.getCaseUUID());
+        userAuditEntry.update(requestData.username(), LocalDateTime.now());
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, userAuditEntry, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 

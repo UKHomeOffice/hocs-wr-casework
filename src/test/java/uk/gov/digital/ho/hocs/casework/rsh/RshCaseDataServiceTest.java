@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.casedetails.StageDataService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
@@ -34,6 +35,9 @@ public class RshCaseDataServiceTest {
     private StageDataService stageDataService;
 
     @Mock
+    private RequestData requestData;
+
+    @Mock
     private EmailService emailService;
 
     private RshCaseService rshCaseService;
@@ -46,7 +50,8 @@ public class RshCaseDataServiceTest {
                 caseDataService,
                 stageDataService,
                 emailService,
-                ""
+                "",
+                requestData
         );
     }
 

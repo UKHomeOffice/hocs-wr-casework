@@ -41,6 +41,22 @@ public class StageAuditEntry implements Serializable {
     @Getter
     private UUID caseUUID;
 
+    @Column(name = "created_by_user", insertable = false)
+    @Getter
+    private String createdByUser;
+
+    @Column(name = "created_timestamp", insertable = false)
+    @Getter
+    private LocalDateTime createdTimestamp;
+
+    @Column(name = "updated_by_user", insertable = false)
+    @Getter
+    private String updatedByUser;
+
+    @Column(name = "updated_timestamp", insertable = false)
+    @Getter
+    private LocalDateTime updatedTimestamp;
+
     private StageAuditEntry(UUID stageUUID, String type, String data, UUID caseUUID, LocalDateTime timestamp) {
         this.uuid = stageUUID;
         this.type = type;

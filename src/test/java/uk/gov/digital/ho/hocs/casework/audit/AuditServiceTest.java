@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.model.UserAuditEntry;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
@@ -23,6 +24,9 @@ public class AuditServiceTest {
     private AuditRepository mockAuditRepository;
 
     @Mock
+    private UserAuditRepository mockUserAuditRepository;
+
+    @Mock
     private RequestData mockRequestData;
 
 
@@ -33,7 +37,7 @@ public class AuditServiceTest {
 
     @Before
     public void setUp() {
-        this.auditService = new AuditService(mockAuditRepository, mockRequestData);
+        this.auditService = new AuditService(mockAuditRepository,mockUserAuditRepository, mockRequestData);
     }
 
     @Test
@@ -92,12 +96,16 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateStageEvent() {
-        StageData stageData = new StageData(UUID.randomUUID(), "", "");
+        UUID uuid = UUID.randomUUID();
+        when(mockUserAuditRepository.findByCaseUUID(uuid)).thenReturn(new UserAuditEntry());
+        StageData stageData = new StageData(uuid, "", "");
 
         auditService.writeUpdateStageEvent(stageData);
 
+        verify(mockUserAuditRepository, times(1)).findByCaseUUID(uuid);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
+
 
     @Test
     public void shouldWriteAddDocumentEvent() {

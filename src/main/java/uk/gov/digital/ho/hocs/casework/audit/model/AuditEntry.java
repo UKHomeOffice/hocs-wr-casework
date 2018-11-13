@@ -37,6 +37,10 @@ public class AuditEntry {
     @JoinColumn(name ="document_id", referencedColumnName = "id")
     private DocumentAuditEntry documentInstance;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name ="user_id", referencedColumnName = "id")
+    private UserAuditEntry userInstance;
+
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
@@ -48,10 +52,15 @@ public class AuditEntry {
         this.eventAction = auditAction.toString();
     }
 
-    public AuditEntry(String username, StageData stageInstance, AuditAction auditAction) {
+    public AuditEntry(String username, StageData stageInstance, UserAuditEntry userAuditEntry, AuditAction auditAction) {
         this.username = username;
         if(stageInstance != null) {
             this.stageInstance = StageAuditEntry.from(stageInstance);
+        }
+        if(userAuditEntry == null) {
+            this.userInstance = UserAuditEntry.from(stageInstance.getCaseUUID(), username, timestamp);
+        } else {
+            this.userInstance = userAuditEntry;
         }
         this.eventAction = auditAction.toString();
     }
